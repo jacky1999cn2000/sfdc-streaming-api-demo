@@ -1,0 +1,9 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false" controller="OppAmountTrackerController">
+	<html>
+		<body>
+			<!-- reactjs -->
+			<div id="app" />
+			<script src="https://75833c28.ngrok.io/bundle.js"/>
+		</body>
+	</html>
+</apex:page>
