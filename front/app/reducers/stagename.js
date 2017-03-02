@@ -1,6 +1,8 @@
 'use strict';
 
-const stagename = (state = 'Closed Won', action) => {
+// this is the selected stagename
+
+const stagename = (state = '', action) => {
     switch (action.type) {
         case 'UPDATE_STAGENAME':
           state = action.stagename;

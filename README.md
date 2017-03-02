@@ -54,6 +54,7 @@
   }
   ```
   * [es6-promises](http://www.datchley.name/es6-promises/)
+  * **updated the code based on Kombucha example - check the code. however, the promisify gist is same**
 
 * [Use 'jsforce' in lightning Component](http://salesforce.stackexchange.com/questions/159529/jsforce-in-lightning-component-controller)
 * [How to avoid XSS and Reflected XSS](http://salesforce.stackexchange.com/questions/61376/how-do-i-fix-stored-xss-and-reflected-xss)
@@ -63,8 +64,11 @@
     * Add `<apex:slds />` to your page and wrap your code in a container `<div class="slds-scope"> ... </div>`
     * The slds resource can now be accessed via `$Asset.SLDS` (compared to the alternative solution that if you upload zipped `slds` assets into static resource, then you can access it via `$Resource.slds`)
     ```
+    // this example illustrate how to use slds in VF page (use svg to create an account avatar)
+
     <div class="slds-scope">
 
+      <!-- This is an avatar defined in VF, so we can use the standard URLFOR function -->
       <span class="slds-icon_container slds-icon-standard-account" title="description of icon when needed">
         <svg aria-hidden="true" class="slds-icon">
           <!-- <use xlink:href="/apexpages/slds/2.1.3/assets/icons/standard-sprite/svg/symbols.svg#account"></use> -->
@@ -90,12 +94,8 @@
       * now we can use the Plugins provided by ALJS (the plugin's initialization can be done in componentDidMount())
       ```
       componentDidMount(){
-        $(document).ready(function() {
-            $('[data-aljs="picklist"]').picklist({
-                onChange: function(obj) {
-                  console.log('obj ',obj);
-                }
-            });
+        $('[data-aljs="picklist"]').picklist({
+            onChange: this.onChangeHandler
         });
       }
       ```
