@@ -1,9 +1,39 @@
-<apex:page showHeader="false" sidebar="false" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false" controller="OppAmountTrackerController">
-	<html>
-		<body>
-			<!-- reactjs -->
-			<div id="app" />
-			<script src="https://75833c28.ngrok.io/bundle.js"/>
-		</body>
-	</html>
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" controller="OppAmountTrackerController">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en">
+        <head>
+            <meta charset="utf-8" />
+            <meta http-equiv="x-ua-compatible" content="ie=edge" />
+            <title>OppAmountTracker</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+            <!-- Import the Design System style sheet -->
+            <apex:slds />
+        </head>
+        <body>
+
+					<div class="slds-scope">
+
+						<!-- This is an avatar defined in VF, so we can use the standard URLFOR function -->
+						<span class="slds-icon_container slds-icon-standard-account" title="description of icon when needed">
+						  <svg aria-hidden="true" class="slds-icon">
+						    <!-- <use xlink:href="/apexpages/slds/2.1.3/assets/icons/standard-sprite/svg/symbols.svg#account"></use> -->
+								<use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#apps')}"></use>
+						  </svg>
+						  <span class="slds-assistive-text">Account Icon</span>
+						</span>
+
+	          <!-- reactjs -->
+	          <div id="app" />
+					</div>
+
+					<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+					<script src="{!URLFOR($Resource.aljs, '/jquery.aljs-all-with-moment.min.js')}"></script>
+
+					<script>
+							var resourcePath = '{!JSENCODE($Asset.SLDS)}';
+					</script>
+
+          <script src="https://b417eb3c.ngrok.io/bundle.js"/>
+        </body>
+    </html>
 </apex:page>

@@ -56,3 +56,65 @@
   * [es6-promises](http://www.datchley.name/es6-promises/)
 
 * [Use 'jsforce' in lightning Component](http://salesforce.stackexchange.com/questions/159529/jsforce-in-lightning-component-controller)
+* [How to avoid XSS and Reflected XSS](http://salesforce.stackexchange.com/questions/61376/how-do-i-fix-stored-xss-and-reflected-xss)
+
+* Front-End
+  * [Use SLDS in Visualforce](https://www.lightningdesignsystem.com/platforms/visualforce/)
+    * Add `<apex:slds />` to your page and wrap your code in a container `<div class="slds-scope"> ... </div>`
+    * The slds resource can now be accessed via `$Asset.SLDS` (compared to the alternative solution that if you upload zipped `slds` assets into static resource, then you can access it via `$Resource.slds`)
+    ```
+    <div class="slds-scope">
+
+      <span class="slds-icon_container slds-icon-standard-account" title="description of icon when needed">
+        <svg aria-hidden="true" class="slds-icon">
+          <!-- <use xlink:href="/apexpages/slds/2.1.3/assets/icons/standard-sprite/svg/symbols.svg#account"></use> -->
+          <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#account')}"></use>
+        </svg>
+        <span class="slds-assistive-text">Account Icon</span>
+      </span>
+
+    </div>
+    ```
+    * Now if we copy the avatar's link, we can confirm `xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#account')}"` is equal to `"/apexpages/slds/2.1.3/assets/icons/standard-sprite/svg/symbols.svg#account"`
+    * This is quite important since in React, we can't use `URLFOR` to concatenate URL (since `URLFOR` is a VF function), therefore, we need a way to figure out the path to our slds resource. Luckily, in VF, we can use the following script to get the slds path, and since `resourcePath` now is a global variable, we can then access it in React code.
+    ```
+    <script>
+        var resourcePath = '{!JSENCODE($Asset.SLDS)}';
+        // resourcePath is '/apexpages/slds/2.1.3'
+    </script>
+    ```
+    * Before we talk about how to use `resourcePath`, let's take a look at how we can use [Appiphony Lightning JS framework](http://aljs.appiphony.com/#!/gettingStarted)
+      * don't need `Import the SLDS Library as a Static Resource` step, since we now can add `<apex:slds />` to use the default slds
+      * follow `Import the ALJS Library as a Static Resource` step to add ALJS Library to static resource
+      * import jquery and ALJS (don't need to import CSS since we use the default)
+      * now we can use the Plugins provided by ALJS (the plugin's initialization can be done in componentDidMount())
+      ```
+      componentDidMount(){
+        $(document).ready(function() {
+            $('[data-aljs="picklist"]').picklist({
+                onChange: function(obj) {
+                  console.log('obj ',obj);
+                }
+            });
+        });
+      }
+      ```
+    * Now let's continue to talk why we need `resourcePath` in React.
+      * First, when we use certain plug's html markup in React (e.g. Picklist), we need to convert some tags to be React compatible (e.g. `xmlns:xlink` to `xmlnsXlink`, and `xlink:href` to `xlinkHref`, just as `class` to `className`)
+      * for svg to work, we need to know the path to the svg symbol (`URLFOR` won't work in React), and this is when we need the `resourcePath`
+      ```
+      // we want this url
+      <svg aria-hidden="true" className="slds-icon">
+          <use xmlnsXlink="http://www.w3.org/1999/xlink" xlinkHref="/apexpages/slds/2.1.3/assets/icons/utility-sprite/svg/symbols.svg#down"></use>
+      </svg>
+
+      // so we can do this in React (see App.jsx)
+
+      let icon_down = resourcePath+'/assets/icons/utility-sprite/svg/symbols.svg#down';
+
+      ...
+
+      <svg aria-hidden="true" className="slds-icon">
+          <use xmlnsXlink="http://www.w3.org/1999/xlink" xlinkHref={icon_down}></use>
+      </svg>
+      ```

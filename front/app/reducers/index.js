@@ -1,10 +1,12 @@
 'use strict';
 
 import { combineReducers } from 'redux';
-import totalAmount from './totalAmount';
+import amount from './amount';
+import stagename from './stagename';
 
 const reducers = combineReducers({
-  totalAmount
+  amount,
+  stagename
 });
 
 export default reducers;
