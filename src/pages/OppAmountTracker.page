@@ -26,14 +26,24 @@
 	          <div id="app" />
 					</div>
 
-					<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-					<script src="{!URLFOR($Resource.aljs, '/jquery.aljs-all-with-moment.min.js')}"></script>
+					<!-- only when we use ALJS fromwork (Selector component rely on it)
+            <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  					<script src="{!URLFOR($Resource.aljs, '/jquery.aljs-all-with-moment.min.js')}"></script>
+          -->
+
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/jsforce/1.7.0/jsforce.min.js"></script>
+
+          <apex:includeScript value="{!$Resource.cometd}"/>
+          <apex:includeScript value="{!$Resource.jquery}"/>
+          <apex:includeScript value="{!$Resource.json2}"/>
+          <apex:includeScript value="{!$Resource.jquery_cometd}"/>
 
 					<script>
 							var resourcePath = '{!JSENCODE($Asset.SLDS)}';
+              var token = '{!$Api.Session_ID}';
 					</script>
 
-          <script src="https://b417eb3c.ngrok.io/bundle.js"/>
+          <script src="https://64c82911.ngrok.io/bundle.js"/>
         </body>
     </html>
 </apex:page>

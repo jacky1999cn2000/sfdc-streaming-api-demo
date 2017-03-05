@@ -12,12 +12,25 @@
   * See Selector.jsx for more details
 */
 
-let defaultStage = [];
-for(let i=0; i<50; i++){
-  defaultStage.push('');
-}
+// let defaultStage = [];
+// for(let i=0; i<50; i++){
+//   defaultStage.push('');
+// }
+//
+// const stagenames = (state = defaultStage, action) => {
+//     switch (action.type) {
+//         case 'SET_STAGE_NAMES':
+//           state = action.stagenameList;
+//           return state;
+//         default:
+//           return state;
+//     }
+// }
 
-const stagenames = (state = defaultStage, action) => {
+/*
+  the following code is for Selector2 - which didn't use ALJS framework
+*/
+const stagenames = (state = [], action) => {
     switch (action.type) {
         case 'SET_STAGE_NAMES':
           state = action.stagenameList;

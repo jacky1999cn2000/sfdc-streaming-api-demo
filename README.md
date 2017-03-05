@@ -1,5 +1,7 @@
 # sfdc-streaming-api
 
+* [Ariticle about Streaming API and Async Apex - Read it](https://developer.salesforce.com/blogs/developer-relations/2013/01/responsive-visualforce-using-streaming-api-and-asynchronous-apex.html)
+
 * Development
   * `cd front`
   * `make install` (if not installed node_modules)
@@ -59,7 +61,7 @@
 * [Use 'jsforce' in lightning Component](http://salesforce.stackexchange.com/questions/159529/jsforce-in-lightning-component-controller)
 * [How to avoid XSS and Reflected XSS](http://salesforce.stackexchange.com/questions/61376/how-do-i-fix-stored-xss-and-reflected-xss)
 
-* Front-End
+* Setup SLDS and ALJS framework
   * [Use SLDS in Visualforce](https://www.lightningdesignsystem.com/platforms/visualforce/)
     * Add `<apex:slds />` to your page and wrap your code in a container `<div class="slds-scope"> ... </div>`
     * The slds resource can now be accessed via `$Asset.SLDS` (compared to the alternative solution that if you upload zipped `slds` assets into static resource, then you can access it via `$Resource.slds`)
@@ -118,3 +120,70 @@
           <use xmlnsXlink="http://www.w3.org/1999/xlink" xlinkHref={icon_down}></use>
       </svg>
       ```
+    * This is what the page looks like:
+    ```
+    <apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" controller="OppAmountTrackerController">
+        <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en">
+            <head>
+                <meta charset="utf-8" />
+                <meta http-equiv="x-ua-compatible" content="ie=edge" />
+                <title>OppAmountTracker</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+                <!-- Import the Design System style sheet -->
+                <apex:slds />
+            </head>
+            <body>
+
+              <div class="slds-scope">
+
+                <!-- This is an avatar defined in VF, so we can use the standard URLFOR function -->
+                <span class="slds-icon_container slds-icon-standard-account" title="description of icon when needed">
+                  <svg aria-hidden="true" class="slds-icon">
+                    <!-- <use xlink:href="/apexpages/slds/2.1.3/assets/icons/standard-sprite/svg/symbols.svg#account"></use> -->
+                    <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#apps')}"></use>
+                  </svg>
+                  <span class="slds-assistive-text">Account Icon</span>
+                </span>
+
+                <!-- reactjs -->
+                <div id="app" />
+              </div>
+
+              <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+              <script src="{!URLFOR($Resource.aljs, '/jquery.aljs-all-with-moment.min.js')}"></script>
+
+              <script>
+                  var resourcePath = '{!JSENCODE($Asset.SLDS)}';
+              </script>
+
+              <script src="https://64c82911.ngrok.io/bundle.js"/>
+            </body>
+        </html>
+    </apex:page>
+    ```
+* Not use ALJS, but use pure CSS+React
+  * Reason? *Picklist plugin with ALJS caused some issues (when use iteration to create Picklist component, need to make sure the option array was not empty so the event could be hooked up with each option item. See `/reducers/stagenames` and `\components\Selector` for more information)*
+  * therefore, I decided to not use ALJS at all, but only pure CSS+React (I'll comment off the following 2 lines in VF page)
+  ```
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="{!URLFOR($Resource.aljs, '/jquery.aljs-all-with-moment.min.js')}"></script>
+  ```
+  * I created another component called `Selector2` which didn't rely on jquery and ALJS
+
+* Use jsforce in VF
+  * add `<script src="https://cdnjs.cloudflare.com/ajax/libs/jsforce/1.7.0/jsforce.min.js"></script>`
+  * initialize conn `var conn = new jsforce.Connection({ accessToken: '{!$API.Session_Id}' });`
+  * create pushTopic
+  ```
+  PushTopic pushTopic = new PushTopic();
+  pushTopic.Name = 'OppUpdates';
+  pushTopic.Query = 'SELECT Id, Name, StageName, Amount FROM Opportunity';
+  pushTopic.ApiVersion = 39.0;
+  pushTopic.NotifyForOperationCreate = true;
+  pushTopic.NotifyForOperationUpdate = true;
+  pushTopic.NotifyForOperationUndelete = true;
+  pushTopic.NotifyForOperationDelete = true;
+  pushTopic.NotifyForFields = 'Referenced';
+  insert pushTopic;
+  ```

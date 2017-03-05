@@ -2,6 +2,10 @@ import React from 'react';
 import {connect} from 'react-redux';
 
 import Selector from './Selector';
+import Selector2 from './Selector2';
+
+import Streaming from '../utils/streaming';
+
 import {getOppStages} from '../actions';
 
 class App extends React.Component {
@@ -18,15 +22,15 @@ class App extends React.Component {
   }
 
   componentDidMount(){
-
+    console.log('token ',token);
+    Streaming.init(token);
+    Streaming.subscribe();
   }
 
   render() {
 
     console.log('this.props.state: ',this.props.state);
     console.log('this.props.state.totalAmount: ',this.props.state.amount);
-
-    let options = this.props.state.stagenames;
 
     return (
       <div className="slds-grid slds-grid--align-center">
@@ -35,7 +39,7 @@ class App extends React.Component {
             Salesforce Streaming API Demo
           </p>
 
-          <Selector options={this.props.state.stagenames} dispatch={this.props.dispatch}/>
+          <Selector2 options={this.props.state.stagenames} dispatch={this.props.dispatch}/>
 
           <div>2</div>
         </div>
