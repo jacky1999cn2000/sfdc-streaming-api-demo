@@ -2,38 +2,6 @@
 
 import Remoting from '../utils/remoting';
 
-// when a new stagename was selected, and we got the new total amount via 'getInitialAmount', then reset the total amount value
-export const setTotalAmount = (amount) => {
-    return {
-        type: 'SET_TOTAL_AMOUNT',
-        amount
-    };
-}
-
-// if the record received via streaming api matches the current stagename, then update the amount total by add the record's amount
-export const addAmountToTotal = (amount) => {
-    return {
-        type: 'ADD_AMOUNT_TO_TOTAL',
-        amount
-    };
-}
-
-// to update the selected stagename
-export const updateStageName = (stagename) => {
-    return {
-        type: 'UPDATE_STAGENAME',
-        stagename
-    };
-}
-
-// to retrieve and set all stagenames for the dropdown list
-export const setStageNames = (stagenameList) => {
-    return {
-        type: 'SET_STAGE_NAMES',
-        stagenameList
-    };
-}
-
 /*
   whenever user select a new stagename via dropdown list, we need to get the inital amount total for all opps with that stagename
   of course, we need to update the selected stagename as well via 'dispatch(updateStageName(stagename));'
@@ -45,17 +13,24 @@ export const getInitialAmount = (stagename) => {
 
     return function(dispatch) {
 
-      dispatch(updateStageName(stagename));
-
       return Remoting.invoke('getInitialAmount', params)
               .then((val) => {
                 let response = JSON.parse(val);
-                dispatch(setTotalAmount(response.result));
+                dispatch(setStageAmount(stagename, response.result));
               })
               .catch((err) => {
                 console.log('rejected: ', err)
               });
     }
+}
+
+// when a new stagename was selected, and we got the new stage and new total amount via 'getInitialAmount', then reset the stag and amount values
+export const setStageAmount = (stagename, amount) => {
+    return {
+        type: 'SET_STAGE_AMOUNT',
+        stagename,
+        amount
+    };
 }
 
 // get all available opp stagenames for the dropdown list
@@ -74,4 +49,12 @@ export const getOppStages = () => {
                 console.log('rejected: ', err)
               });
     }
+}
+
+// to retrieve and set all stagenames for the dropdown list
+export const setStageNames = (stagenameList) => {
+    return {
+        type: 'SET_STAGE_NAMES',
+        stagenameList
+    };
 }

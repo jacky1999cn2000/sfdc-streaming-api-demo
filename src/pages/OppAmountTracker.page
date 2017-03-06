@@ -31,8 +31,10 @@
   					<script src="{!URLFOR($Resource.aljs, '/jquery.aljs-all-with-moment.min.js')}"></script>
           -->
 
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/jsforce/1.7.0/jsforce.min.js"></script>
+          <!-- google chart -->
+          <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
+          <!-- libraries used for client-side streaming api -->
           <apex:includeScript value="{!$Resource.cometd}"/>
           <apex:includeScript value="{!$Resource.jquery}"/>
           <apex:includeScript value="{!$Resource.json2}"/>
@@ -43,7 +45,7 @@
               var token = '{!$Api.Session_ID}';
 					</script>
 
-          <script src="https://64c82911.ngrok.io/bundle.js"/>
+          <script src="https://841a09b6.ngrok.io/bundle.js"/>
         </body>
     </html>
 </apex:page>

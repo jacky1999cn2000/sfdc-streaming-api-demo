@@ -171,9 +171,7 @@
   ```
   * I created another component called `Selector2` which didn't rely on jquery and ALJS
 
-* Use jsforce in VF
-  * add `<script src="https://cdnjs.cloudflare.com/ajax/libs/jsforce/1.7.0/jsforce.min.js"></script>`
-  * initialize conn `var conn = new jsforce.Connection({ accessToken: '{!$API.Session_Id}' });`
+* Enable Streaming API
   * create pushTopic
   ```
   PushTopic pushTopic = new PushTopic();
@@ -187,3 +185,114 @@
   pushTopic.NotifyForFields = 'Referenced';
   insert pushTopic;
   ```
+  * [Example in document](https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/code_sample_vfp_intro.htm)
+  * add the following files
+  ```
+  <!-- libraries used for client-side streaming api -->
+  <apex:includeScript value="{!$Resource.cometd}"/>
+  <apex:includeScript value="{!$Resource.jquery}"/>
+  <apex:includeScript value="{!$Resource.json2}"/>
+  <apex:includeScript value="{!$Resource.jquery_cometd}"/>
+  ```
+  * encapsulate functions in streaming.js (**_notifier is a passed in function, and responsible for handling incoming streaming api record**)
+  ```
+  'use strict';
+
+  module.exports = {
+    // store subscriptionId so we can call unsubscribe() with it
+    _topicsubscription: null,
+
+    // store a method passed in from App.jsx, so whenever a new record coming via streaming api, we can delete this method to handle it
+    _notifier: null,
+
+    init: function(token, notifier){
+      $.cometd.init({
+         url: window.location.protocol+'//'+window.location.hostname+'/cometd/24.0/',
+         requestHeaders: { Authorization: 'OAuth '+token }
+      });
+      this._notifier = notifier;
+    },
+
+    subscribe: function(){
+      this._topicsubscription = $.cometd.subscribe('/topic/OppUpdates', this._notifier);
+    },
+
+    unsubscribe: function(){
+      $.cometd.unsubscribe(this._topicsubscription);
+      this._topicsubscription = null;
+      this._notifier = null;
+    },
+
+    disconnect: function(){
+      if(this._topicsubscription){
+        this.unsubscribe();
+      }
+      $cometd.disconnect();
+    }
+
+  }
+  ```
+  * init it and disconnect it in App.jsx's componentDidMount and componentWillUnmount
+  ```
+  import Streaming from '../utils/streaming';
+
+  ...
+
+  componentDidMount(){
+    // init Streaming service
+    Streaming.init(token, this.newRecordNotifier);
+  }
+
+  // disconnect Streaming service when unmount
+  componentWillUnmount(){
+    Streaming.disconnect();
+  }
+  ```
+  * App.jsx only init it or disconnect it, the real "subscribe" and "unsubscribe" happend in Buttons.jsx
+  ```
+  subClicked = () => {
+    this.toggle();
+    Streaming.subscribe();
+    console.log('_id ',Streaming._topicsubscription);
+  }
+
+  unsubClicked = () => {
+    this.toggle();
+    Streaming.unsubscribe();
+    console.log('_id ',Streaming._topicsubscription);
+  }
+  ```
+
+* Integrate Streaming API with Chart
+  * [Google Chart](https://developers.google.com/chart/interactive/docs/quick_start)
+  * in App.jsx, we add a `<div id="chart_div"></div>` tag (every time `drawChart()` method was called, it will try to find this tag and rerender the chart)
+  * meanwhile, I added a dummy component called `<ChartRefresher data={stateWithAmount} record={newRecord}/>`, and its job is to call `drawChart()` whenever a Streaming API record was received (since the component's `componentWillReceiveProps` will be called whenever it receive new props - `stateWithAmount` is a data stored in redux and will change whenever user select a new state from dropdown list, `newRecord` is a value stored in App.jsx's state, and will be changed whenever App.jsx's `notifier` method received a record via streaming.js)
+  ```
+  <div className="chart">
+    <div>
+      <div id="chart_div"></div>
+      <ChartRefresher data={stateWithAmount} record={newRecord}/>
+    </div>
+  </div>
+  ```
+  * well, some ugly logic was added in `ChartRefresher`'s `componentWillReceiveProps` method to determine how to draw the chart under different situations
+
+* Testing
+  * run something like this (or probably insert opps) in developer console `opp.Amount = 10000;` won't work since it won't change the value after first time. **if update, then make sure you changed something**
+  ```
+  List<Opportunity> oppList = [SELECT Id, Name, Amount FROM Opportunity LIMIT 3];
+
+  for(Opportunity opp : oppList){
+      Long startTime = DateTime.now().getTime();
+  	Long finishTime = DateTime.now().getTime();
+  	while ((finishTime - startTime) < 1000) {
+      	//sleep for 1s
+      	finishTime = DateTime.now().getTime();
+  	}
+      opp.Amount = opp.Amount + 10;
+      update opp;
+  }
+  ```
+
+* Demo
+![Demo](./demo.gif)

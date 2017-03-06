@@ -1,33 +1,33 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import {updateStageName} from '../actions';
+import {getInitialAmount} from '../actions';
 
 class Selector2 extends React.Component {
 
   constructor() {
       super(...arguments);
+      // stage was only used to control this componenet's behavior
       this.state = {
         open: false,
         selected: 'Select a Stage'
       };
   }
 
-  componentDidMount(){
-
-  }
-
+  // toggle dropdown list open or close
   toggle = () => {
       this.setState({
           open: !this.state.open
       });
   }
 
+  // when an item being clicked, update "selected" stage (so the UI could be correctly displayed), and dispatch action to retrieve amount for newly selected stage (these would be stored in redux)
   clickItem = (stagename) => {
     this.setState({
         selected: stagename
     });
-    this.props.dispatch(updateStageName(stagename));
+
+    this.props.dispatch(getInitialAmount(stagename));
   }
 
   render() {
