@@ -232,7 +232,7 @@
 
   }
   ```
-  * init it and disconnect it in App.jsx's componentDidMount and componentWillUnmount
+  * init it and disconnect it in App.jsx's `componentDidMount` and `componentWillUnmount`, also the `newRecordNotifier` method was passed in to Streaming.js as the handler method 
   ```
   import Streaming from '../utils/streaming';
 
@@ -246,6 +246,28 @@
   // disconnect Streaming service when unmount
   componentWillUnmount(){
     Streaming.disconnect();
+  }
+
+  ...
+
+  /* defined like this, when called from streaming.js, 'this' is App.jsx */
+  newRecordNotifier = (message) => {
+      console.log('***newRecordNotifier');
+
+
+      console.log('channel ',JSON.stringify(message.channel));
+      console.log('object ',JSON.stringify(message.data.sobject));
+      console.log('stagename ',message.data.sobject.StageName);
+      console.log('Amount ',message.data.sobject.Amount);
+      console.log('event type ',JSON.stringify(message.data.event.type));
+
+      // somehow, it seemed we can't use "this.props.dispatch" here
+      // this.props.dispatch(setNewRecord(message.data.sobject.StageName, message.data.sobject.Amount));
+
+      // however, if we think about it, we shouldn't use dispatch here anyway, this.setState should be a better option here
+      this.setState({
+          newRecord: message.data.sobject
+      });
   }
   ```
   * App.jsx only init it or disconnect it, the real "subscribe" and "unsubscribe" happend in Buttons.jsx
