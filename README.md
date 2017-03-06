@@ -61,7 +61,7 @@
 * [Use 'jsforce' in lightning Component](http://salesforce.stackexchange.com/questions/159529/jsforce-in-lightning-component-controller)
 * [How to avoid XSS and Reflected XSS](http://salesforce.stackexchange.com/questions/61376/how-do-i-fix-stored-xss-and-reflected-xss)
 
-* Setup SLDS and ALJS framework
+* Setup SLDS and ALJS framework (**THIS IS DEPRECATED, AND CHECK THE NEXT POINT TO SEE HOW WE NOT USE ALJS**)
   * [Use SLDS in Visualforce](https://www.lightningdesignsystem.com/platforms/visualforce/)
     * Add `<apex:slds />` to your page and wrap your code in a container `<div class="slds-scope"> ... </div>`
     * The slds resource can now be accessed via `$Asset.SLDS` (compared to the alternative solution that if you upload zipped `slds` assets into static resource, then you can access it via `$Resource.slds`)
@@ -232,7 +232,7 @@
 
   }
   ```
-  * init it and disconnect it in App.jsx's `componentDidMount` and `componentWillUnmount`, also the `newRecordNotifier` method was passed in to Streaming.js as the handler method 
+  * init it and disconnect it in App.jsx's `componentDidMount` and `componentWillUnmount`, also the `newRecordNotifier` method was passed in to Streaming.js as the handler method
   ```
   import Streaming from '../utils/streaming';
 
